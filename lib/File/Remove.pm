@@ -71,7 +71,7 @@ use vars qw(@EXPORT_OK @ISA $VERSION $debug);
 
 use File::Spec;
 
-$VERSION = '0.21_01';
+$VERSION = '0.21';
 
 sub _recurse_dir($);
 

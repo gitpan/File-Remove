@@ -4,8 +4,5 @@ Makefile.PL
 README
 lib/File/Remove.pm
 META.yml                                 Module meta-data (added by MakeMaker)
+SIGNATURE
 t/0_use.t
-t/1_file.t                               Test with files
-t/2_dir.t                                Test with directories
-t/3_recurse.t                            Test with directories, recursively
-t/4_combo.t                              Test with files and directories
