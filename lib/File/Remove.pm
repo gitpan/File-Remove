@@ -102,40 +102,9 @@ use vars qw(@EXPORT_OK @ISA $VERSION $debug $unlink $rmdir);
 @EXPORT_OK = qw(remove rm trash);
 
 use File::Spec;
+use File::Path qw(rmtree);
 
-$VERSION = '0.27';
-
-sub _recurse_dir($);
-
-sub _recurse_dir($)
-{
-    my $dir = shift;
-
-    chmod 0777,$dir;
-    opendir DIR,$dir
-        or return 0;
-    my @files = File::Spec->no_upwards(readdir DIR)
-        or return 0;
-    closedir DIR;
-
-    my $ret;
-    for (@files) {
-	my $file = File::Spec->catfile($dir, $_);
-	# TODO: this needs to be more aware of catdir
-        print "file: $file\n"
-            if $debug;
-        if(-f $file || -l $file) {
-	    my $result = $unlink ? $unlink->($_) : unlink($_);
-	    next unless $result;
-            $ret = 1;
-        } elsif (-d $file && ! -l $file) {
-	    _recurse_dir $file;
-	    my $result = $rmdir ? $rmdir->($_) : rmdir($_);
-	    next unless $result;
-	}
-    }
-    $ret;
-}
+$VERSION = '0.28';
 
 sub expand (@)
 {
@@ -175,13 +144,15 @@ sub remove (@)
 	    # XXX: this regex seems unnecessary, and may trigger bugs someday.
 	    # TODO: but better to trim trailing slashes for now.
 	    s/\/$//;
-	    my ($save_mode) = (stat $_)[2];
 	    if ($$recursive) {
-		$ret = _recurse_dir $_;
+		my $result = rmtree([$_], $debug, 1);
+		push(@removes, $_) if $result;
+	    } else {
+		my ($save_mode) = (stat $_)[2];
+		chmod $save_mode & 0777,$_; # just in case we cannot remove it.
+		my $result = $rmdir ? $rmdir->($_) : rmdir($_);
+		push(@removes, $_) if $result;
 	    }
-	    chmod $save_mode & 0777,$_; # just in case we cannot remove it.
-	    my $result = $rmdir ? $rmdir->($_) : rmdir($_);
-	    push(@removes, $_) if $result;
         } else {
 	    print "???: $_\n" if $debug;
 	}
