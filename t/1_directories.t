@@ -6,7 +6,7 @@
 # change 'tests => 2' to 'tests => last_test_to_print';
 
 use Test::More qw(no_plan); # tests => 2;
-BEGIN { use_ok('File::Remove' => qw(remove undelete)) };
+BEGIN { use_ok('File::Remove' => qw(remove trash)) };
 
 #########################
 
@@ -106,8 +106,8 @@ for my $path (reverse @dirs) {
     for my $path (reverse @dirs) {
 	ok -e $path,
 	  "-e: $path";
-	ok eval { undelete($path) },
-	  "undelete: $path";
+	ok eval { trash($path) },
+	  "trash: $path";
 	ok !-e $path,
 	  "!-e: $path";
     }
@@ -150,6 +150,28 @@ for my $path (reverse @dirs) {
 	    ok !-e $path,
 	      "!-e: $path";
 	}
+    }
+
+    for my $path (@dirs) {
+	ok !-e $path,
+	  "!-e: $path";
+	ok mkdir($path),
+	  "mkdir: $path";
+	ok -e $path,
+	  "-e: $path";
+    }
+
+    for my $path (reverse @dirs) {
+	ok -e $path,
+	  "-e: $path";
+	ok eval { trash({ 'rmdir' => sub { 1 }, 'unlink' => sub { 1 } }, $path) },
+	  "trash: $path";
+	ok -e $path,
+	  "-e: $path";
+	ok rmdir($path),
+	  "rmdir: $path";
+	ok !-e $path,
+	  "!-e: $path";
     }
 
     UNDELETE: 1;

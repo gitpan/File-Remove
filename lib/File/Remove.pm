@@ -17,8 +17,8 @@ B<File::Remove> - Remove files and directories
     # removes (with recursion) several files and directories
     remove \1, qw( file1 file2 directory1 *~ );
 
-    # removes (with support for undeleting later) several files
-    undelete qw( *~ );
+    # trashes (with support for undeleting later) several files
+    trash qw( *~ );
 
 =head1 DESCRIPTION
 
@@ -27,7 +27,9 @@ B</bin/rm>, for the most part.  Although unlink can be given a list
 of files, it will not remove directories; this module remedies that.
 It also accepts wildcards, * and ?, as arguments for filenames.
 
-B<File::Remove::undelete> accepts the same arguments as B<remove>.
+B<File::Remove::trash> accepts the same arguments as B<remove>, with
+the addition of an optional, infrequently used "other platforms"
+hashref.
 
 =head1 METHODS
 
@@ -47,13 +49,14 @@ list/number should match what was passed in if everything went well.
 
 =item rm
 
-Just calls remove.  It's there for people who get tired of typing
-'remove'.
+Just calls B<remove>.  It's there for people who get tired of typing
+B<remove>.
 
-=item undelete
+=item trash
 
 Removes files and directories, with support for undeleting later.
-Arguments are passed unmodified to B<remove>.
+Accepts an optional "other platforms" hashref, passing the remaining
+arguments to B<remove>.
 
 =over 4
 
@@ -67,7 +70,9 @@ Requires L<Mac::Glue>.
 
 =item Other platforms
 
-Not supported at this time.
+The first argument to trash() must be a hashref with two keys,
+'rmdir' and 'unlink', each referencing a coderef.  The coderefs
+will be called with the filenames that are to be deleted.
 
 =back
 
@@ -94,13 +99,11 @@ use strict;
 use vars qw(@EXPORT_OK @ISA $VERSION $debug $unlink $rmdir);
 @ISA = qw(Exporter);
 # we export nothing by default :)
-@EXPORT_OK = qw(remove rm undelete);
-
-$debug++;
+@EXPORT_OK = qw(remove rm trash);
 
 use File::Spec;
 
-$VERSION = '0.24';
+$VERSION = '0.25';
 
 sub _recurse_dir($);
 
@@ -189,10 +192,14 @@ sub remove (@)
 
 sub rm (@) { goto &remove }
 
-sub undelete (@) {
-    our $unlink;
-    our $rmdir;
-    if ($^O =~ /win32/i) {
+sub trash (@) {
+    our $unlink = $unlink;
+    our $rmdir = $rmdir;
+    if (ref($_[0]) eq 'HASH') {
+	my %options = %{+shift @_};
+	$unlink = $options{'unlink'};
+	$rmdir = $options{'rmdir'};
+    } elsif ($^O =~ /win32/i) {
 	eval 'use Win32::FileOp ();';
 	die "Can't load Win32::FileOp to support the Recycle Bin: \$@ = $@" if length $@;
 	$unlink = \&Win32::FileOp::Recycle;
@@ -209,9 +216,11 @@ sub undelete (@) {
 	$unlink = $code;
 	$rmdir = $code;
     } else {
-	die "Support for undelete on platform '$^O' not available at this time.\n";
+	die "Support for trash() on platform '$^O' not available at this time.\n";
     }
     goto &remove;
 }
+
+sub undelete (@) { goto &trash }
 
 1;

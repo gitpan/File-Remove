@@ -1,5 +1,10 @@
 Revision history for Perl extension File::Remove.
 
+0.25 Mon Nov 15 12:04:00 2004
+    - Renamed undelete() to trash(), to be more clear.
+    - Allow users to provide their own rmdir/unlink to trash().
+    - Re-disabled debugging by default.
+
 0.24 Mon Nov 15 11:32:00 2004
     - Add undelete support for OS X (via Mac::Glue).
     - Fix undelete overloading of unlink/rmdir and update tests.
