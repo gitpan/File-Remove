@@ -103,7 +103,7 @@ use vars qw(@EXPORT_OK @ISA $VERSION $debug $unlink $rmdir);
 
 use File::Spec;
 
-$VERSION = '0.26';
+$VERSION = '0.27';
 
 sub _recurse_dir($);
 
@@ -125,13 +125,13 @@ sub _recurse_dir($)
         print "file: $file\n"
             if $debug;
         if(-f $file || -l $file) {
-            $unlink->($file)
-                or next;
+	    my $result = $unlink ? $unlink->($_) : unlink($_);
+	    next unless $result;
             $ret = 1;
         } elsif (-d $file && ! -l $file) {
 	    _recurse_dir $file;
-	    $rmdir->($file)
-	        or next;
+	    my $result = $rmdir ? $rmdir->($_) : rmdir($_);
+	    next unless $result;
 	}
     }
     $ret;
