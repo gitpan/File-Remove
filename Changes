@@ -1,7 +1,13 @@
 Revision history for Perl extension File::Remove.
 
+0.22 Mon Nov 15 08:17:00 2004
+    - Add the first set of tests.
+
 0.21 Tue Jul 20 10:17:00 2004
-    - Converted the internals to File::Spec. (Richard Soderberg)
+    - Converted the internals to File::Spec.
+
+    - Maintenance transferred by modules@perl.org to Richard Soderberg.
+      Please e-mail bug reports to <bug-File-Remove@rt.cpan.org>.
 
 0.20 Tue Apr 15 23:34:25 1998
     - Now you can pass a scalar reference as the first argument and it

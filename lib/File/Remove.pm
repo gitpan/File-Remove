@@ -71,7 +71,7 @@ use vars qw(@EXPORT_OK @ISA $VERSION $debug);
 
 use File::Spec;
 
-$VERSION = '0.21';
+$VERSION = '0.22';
 
 sub _recurse_dir($);
 
@@ -138,16 +138,18 @@ sub remove(@)
             unlink $_
                 and push @removes,$_;
         }
-        elsif(-d $_ && $$recursive) {
+        elsif(-d $_) {
 	    print "dir: $_\n" if $debug;
 	    # XXX: this regex seems unnecessary, and may trigger bugs someday.
 	    # TODO: but better to trim trailing slashes for now.
-            s/\/$//;
-            my ($save_mode) = (stat $_)[2];
-            $ret = _recurse_dir $_;
-            chmod $save_mode & 0777,$_; # just in case we cannot remove it.
-            rmdir $_
-                and push @removes, $_;
+	    s/\/$//;
+	    my ($save_mode) = (stat $_)[2];
+	    if ($$recursive) {
+		$ret = _recurse_dir $_;
+	    }
+	    chmod $save_mode & 0777,$_; # just in case we cannot remove it.
+	    rmdir $_
+		and push @removes, $_;
         } else {
 	    print "???: $_\n" if $debug;
 	}
