@@ -1,5 +1,8 @@
 Revision history for Perl extension File::Remove.
 
+0.21 Tue Jul 20 10:17:00 2004
+    - Converted the internals to File::Spec. (Richard Soderberg)
+
 0.20 Tue Apr 15 23:34:25 1998
     - Now you can pass a scalar reference as the first argument and it
       will used as the recursive flag when removing directories.  With
