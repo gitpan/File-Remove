@@ -91,8 +91,8 @@ for my $path (reverse @dirs) {
 
 {
     local $TODO;
-    $TODO = "Support non-Win32 platforms" unless $^O =~ /win32/i;
-    goto UNDELETE if length $TODO;
+    $TODO = "Undelete support not available for this platform" unless $^O =~ /(?:win32|darwin)/i;
+    goto UNDELETE if defined $TODO;
 
     for my $path (@dirs) {
 	ok !-e $path,
@@ -108,6 +108,35 @@ for my $path (reverse @dirs) {
 	  "-e: $path";
 	ok eval { undelete($path) },
 	  "undelete: $path";
+	ok !-e $path,
+	  "!-e: $path";
+    }
+
+    for my $path (reverse @dirs) {
+	ok !-e $path,
+	  "-e: $path";
+	if (-e _) {
+	    ok rmdir($path),
+	      "rmdir: $path";
+	    ok !-e $path,
+	      "!-e: $path";
+	}
+    }
+
+    for my $path (@dirs) {
+	ok !-e $path,
+	  "!-e: $path";
+	ok mkdir($path),
+	  "mkdir: $path";
+	ok -e $path,
+	  "-e: $path";
+    }
+
+    for my $path (reverse @dirs) {
+	ok -e $path,
+	  "-e: $path";
+	ok remove($path),
+	  "remove: $path";
 	ok !-e $path,
 	  "!-e: $path";
     }

@@ -33,7 +33,7 @@ B<File::Remove::undelete> accepts the same arguments as B<remove>.
 
 =over 4
 
-=item X<remove>
+=item remove
 
 Removes files and directories.  Directories are removed recursively like
 in B<rm -rf> if the first argument is a reference to a scalar that
@@ -45,18 +45,31 @@ In list context it returns a list of files/directories removed, in
 scalar context it returns the number of files/directories removed.  The
 list/number should match what was passed in if everything went well.
 
-=item X<rm>
+=item rm
 
 Just calls remove.  It's there for people who get tired of typing
 'remove'.
 
-=item X<undelete>
+=item undelete
 
 Removes files and directories, with support for undeleting later.
 Arguments are passed unmodified to B<remove>.
 
-Currently, undelete support is only available on Win32 platforms;
-the L<Win32::FileOp> module is required.
+=over 4
+
+=item Win32
+
+Requires L<Win32::FileOp>.
+
+=item OS X
+
+Requires L<Mac::Glue>.
+
+=item Other platforms
+
+Not supported at this time.
+
+=back
 
 =back
 
@@ -78,14 +91,16 @@ you can redistribute and/or modify it under the same terms as Perl itself.
 =cut
 
 use strict;
-use vars qw(@EXPORT_OK @ISA $VERSION $debug);
+use vars qw(@EXPORT_OK @ISA $VERSION $debug $unlink $rmdir);
 @ISA = qw(Exporter);
 # we export nothing by default :)
 @EXPORT_OK = qw(remove rm undelete);
 
+$debug++;
+
 use File::Spec;
 
-$VERSION = '0.23';
+$VERSION = '0.24';
 
 sub _recurse_dir($);
 
@@ -107,19 +122,19 @@ sub _recurse_dir($)
         print "file: $file\n"
             if $debug;
         if(-f $file || -l $file) {
-            unlink($file)
+            $unlink->($file)
                 or next;
             $ret = 1;
         } elsif (-d $file && ! -l $file) {
 	    _recurse_dir $file;
-	    rmdir($file)
+	    $rmdir->($file)
 	        or next;
 	}
     }
     $ret;
 }
 
-sub expand(@)
+sub expand (@)
 {
     my @args;
 
@@ -132,7 +147,7 @@ sub expand(@)
 # acts like unlink would until given a directory as an argument, then
 # it acts like rm -rf ;) unless the recursive arg is zero which it is by
 # default
-sub remove(@)
+sub remove (@)
 {
     my $recursive;
     if(ref $_[0] eq 'SCALAR') {
@@ -149,8 +164,8 @@ sub remove(@)
         print "file: $_\n" if $debug;
         if(-f $_ || -l $_) {
             print "file unlink: $_\n" if $debug;
-	    unlink($_)
-                and push @removes,$_;
+	    my $result = $unlink ? $unlink->($_) : unlink($_);
+	    push(@removes, $_) if $result;
         }
         elsif(-d $_) {
 	    print "dir: $_\n" if $debug;
@@ -162,8 +177,8 @@ sub remove(@)
 		$ret = _recurse_dir $_;
 	    }
 	    chmod $save_mode & 0777,$_; # just in case we cannot remove it.
-	    rmdir($_)
-		and push @removes, $_;
+	    my $result = $rmdir ? $rmdir->($_) : rmdir($_);
+	    push(@removes, $_) if $result;
         } else {
 	    print "???: $_\n" if $debug;
 	}
@@ -174,14 +189,25 @@ sub remove(@)
 
 sub rm (@) { goto &remove }
 
-sub undelete(@) {
-    local *unlink;
-    local *rmdir;
+sub undelete (@) {
+    our $unlink;
+    our $rmdir;
     if ($^O =~ /win32/i) {
 	eval 'use Win32::FileOp ();';
 	die "Can't load Win32::FileOp to support the Recycle Bin: \$@ = $@" if length $@;
-	*unlink = \&Win32::FileOp::Recycle;
-	*rmdir = \&Win32::FileOp::Recycle;
+	$unlink = \&Win32::FileOp::Recycle;
+	$rmdir = \&Win32::FileOp::Recycle;
+    } elsif ($^O =~ /darwin/i) {
+	our $f;
+	eval 'use Mac::Glue ();';
+	die "Can't load Mac::Glue::Finder to support the Trash Can: \$@ = $@" if length $@;
+	my $code = sub {
+	    my $f = Mac::Glue->new("Finder");
+	    my @files = map { s{^:}{}; $_ } map { s{/}{:}g; $_ } map { File::Spec->rel2abs($_) } @_;
+	    $f->delete(@files);
+	};
+	$unlink = $code;
+	$rmdir = $code;
     } else {
 	die "Support for undelete on platform '$^O' not available at this time.\n";
     }

@@ -1,7 +1,13 @@
 Revision history for Perl extension File::Remove.
 
-0.23 Mon Nov 15 08:17:00 2004
-    - Add undelete support (currently only for Win32, via Win32::FileOp).
+0.24 Mon Nov 15 11:32:00 2004
+    - Add undelete support for OS X (via Mac::Glue).
+    - Fix undelete overloading of unlink/rmdir and update tests.
+    - Fix the documentation to be readable with perldoc.
+
+0.23 Mon Nov 15 09:45:00 2004
+    - Add undelete supportand tests (currently only for Win32, via
+      Win32::FileOp).
 
 0.22 Mon Nov 15 08:17:00 2004
     - Add the first set of tests.
