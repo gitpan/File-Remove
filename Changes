@@ -1,5 +1,8 @@
 Revision history for Perl extension File::Remove.
 
+0.29 Mon Dec 04 16:35:00 2004
+    - Stabilize undelete support for OS X and Windows.
+
 0.26 Mon Nov 16 07:31:00 2004
     - Fix the synopsis.
 

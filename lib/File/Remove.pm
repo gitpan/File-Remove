@@ -104,7 +104,7 @@ use vars qw(@EXPORT_OK @ISA $VERSION $debug $unlink $rmdir);
 use File::Spec;
 use File::Path qw(rmtree);
 
-$VERSION = '0.28';
+$VERSION = '0.29';
 
 sub expand (@)
 {
@@ -170,12 +170,12 @@ sub trash (@) {
 	my %options = %{+shift @_};
 	$unlink = $options{'unlink'};
 	$rmdir = $options{'rmdir'};
-    } elsif ($^O =~ /win32/i) {
+    } elsif ($^O eq 'cygwin' || $^O =~ /^MSWin/) {
 	eval 'use Win32::FileOp ();';
 	die "Can't load Win32::FileOp to support the Recycle Bin: \$@ = $@" if length $@;
 	$unlink = \&Win32::FileOp::Recycle;
 	$rmdir = \&Win32::FileOp::Recycle;
-    } elsif ($^O =~ /darwin/i) {
+    } elsif ($^O eq 'darwin') {
 	our $f;
 	eval 'use Mac::Glue ();';
 	die "Can't load Mac::Glue::Finder to support the Trash Can: \$@ = $@" if length $@;

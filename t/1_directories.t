@@ -89,11 +89,18 @@ for my $path (reverse @dirs) {
     }
 }
 
-{
+TODO: {
     local $TODO;
-    $TODO = "Undelete support not available for this platform" unless $^O =~ /(?:win32|darwin)/i;
-    goto UNDELETE if defined $TODO;
-
+    if ($^O eq 'darwin') {
+        eval 'use Mac::Glue;';
+        $TODO = "Undelete support requires Mac::Glue" if length $@;
+    } elsif ($^O eq 'cygwin' || $^O =~ /^MSWin/) {
+        eval 'use Win32::FileOp::Recycle;';
+        $TODO = "Undelete support requires Win32::FileOp::Recycle" if length $@;
+    } else {
+        $TODO = "Undelete support not available by default";
+    }
+    
     for my $path (@dirs) {
 	ok !-e $path,
 	  "!-e: $path";
@@ -106,10 +113,12 @@ for my $path (reverse @dirs) {
     for my $path (reverse @dirs) {
 	ok -e $path,
 	  "-e: $path";
-	ok eval { trash($path) },
-	  "trash: $path";
-	ok !-e $path,
-	  "!-e: $path";
+      ok eval { trash($path) },
+        "trash: $path";
+      is $@, '',
+        "trash: \$@";
+      ok !-e $path,
+        "!-e: $path";
     }
 
     for my $path (reverse @dirs) {
