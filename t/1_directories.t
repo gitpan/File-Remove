@@ -6,7 +6,7 @@
 # change 'tests => 2' to 'tests => last_test_to_print';
 
 use Test::More qw(no_plan); # tests => 2;
-BEGIN { use_ok('File::Remove' => qw(remove)) };
+BEGIN { use_ok('File::Remove' => qw(remove undelete)) };
 
 #########################
 
@@ -14,6 +14,15 @@ BEGIN { use_ok('File::Remove' => qw(remove)) };
 # its man page ( perldoc Test::More ) for help writing this test script.
 
 my @dirs = ("$0.tmp", map { "$0.tmp/$_" } qw(a a/b c c/d e e/f g));
+
+for my $path (reverse @dirs) {
+    if (-e $path) {
+	ok rmdir($path),
+	  "rmdir: $path";
+	ok !-e $path,
+	  "!-e: $path";
+    }
+}
 
 for my $path (@dirs) {
     ok !-e $path,
@@ -78,6 +87,43 @@ for my $path (reverse @dirs) {
 	ok !-e $path,
 	  "!-e: $path";
     }
+}
+
+{
+    local $TODO;
+    $TODO = "Support non-Win32 platforms" unless $^O =~ /win32/i;
+    goto UNDELETE if length $TODO;
+
+    for my $path (@dirs) {
+	ok !-e $path,
+	  "!-e: $path";
+	ok mkdir($path),
+	  "mkdir: $path";
+	ok -e $path,
+	  "-e: $path";
+    }
+
+    for my $path (reverse @dirs) {
+	ok -e $path,
+	  "-e: $path";
+	ok eval { undelete($path) },
+	  "undelete: $path";
+	ok !-e $path,
+	  "!-e: $path";
+    }
+
+    for my $path (reverse @dirs) {
+	ok !-e $path,
+	  "-e: $path";
+	if (-e _) {
+	    ok rmdir($path),
+	      "rmdir: $path";
+	    ok !-e $path,
+	      "!-e: $path";
+	}
+    }
+
+    UNDELETE: 1;
 }
 
 1;
