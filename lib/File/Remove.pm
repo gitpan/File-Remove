@@ -8,17 +8,14 @@ B<File::Remove> - Remove files and directories
 
     use File::Remove qw(remove);
 
-    # removes several files and directories
-    remove qw( file1 file2 directory1 );
+    # removes (without recursion) several files
+    remove qw( *.c *.pl );
 
-    # removes (with recursion) several files
-    remove \1, qw( file3 file4 directory5 );
+    # removes (with recursion) several directories
+    remove \1, qw( directory1 directory2 ); 
 
-    # removes only files, even if the filespec matches a directory
-    remove "*.c","*.pl";
-
-    # recurses into subdirectories and removes them all
-    remove \1, "directory"; 
+    # removes (with recursion) several files and directories
+    remove \1, qw( file1 file2 directory1 *~ );
 
 =head1 DESCRIPTION
 
@@ -72,9 +69,9 @@ use vars qw(@EXPORT_OK @ISA $VERSION $debug);
 # we export nothing by default :)
 @EXPORT_OK = qw(remove rm);
 
-use File::Spec qw(no_upwards catfile catdir);
+use File::Spec;
 
-$VERSION = '0.21_00';
+$VERSION = '0.21_01';
 
 sub _recurse_dir($);
 
@@ -85,27 +82,24 @@ sub _recurse_dir($)
     chmod 0777,$dir;
     opendir DIR,$dir
         or return 0;
-    my @files = &no_upwards(readdir DIR)
+    my @files = File::Spec->no_upwards(readdir DIR)
         or return 0;
     closedir DIR;
 
     my $ret;
     for (@files) {
-	my $file = &catfile($dir, $_);
-	# TODO: this needs to be more aware of &catdir
+	my $file = File::Spec->catfile($dir, $_);
+	# TODO: this needs to be more aware of catdir
         print "file: $file\n"
             if $debug;
-        if(-f $file || -l _) {
+        if(-f $file || -l $file) {
             unlink $file
                 or next;
             $ret = 1;
-        } else {
-	    my $path = &catdir($dir, $_);
-            if(-d $path && ! -l _) {
-                _recurse_dir $path;
-                rmdir $path
-                    or next;
-            }
+        } elsif (-d $file && ! -l $file) {
+	    _recurse_dir $file;
+	    rmdir $file
+	        or next;
 	}
     }
     $ret;
@@ -138,13 +132,14 @@ sub remove(@)
 
     my $ret;
     for (@files) {
-        print "$_\n"
-            if $debug;
-        if(-f $_ || -l _) {
+        print "file: $_\n" if $debug;
+        if(-f $_ || -l $_) {
+            print "file unlink: $_\n" if $debug;
             unlink $_
                 and push @removes,$_;
         }
         elsif(-d $_ && $$recursive) {
+	    print "dir: $_\n" if $debug;
 	    # XXX: this regex seems unnecessary, and may trigger bugs someday.
 	    # TODO: but better to trim trailing slashes for now.
             s/\/$//;
@@ -153,7 +148,9 @@ sub remove(@)
             chmod $save_mode & 0777,$_; # just in case we cannot remove it.
             rmdir $_
                 and push @removes, $_;
-        }
+        } else {
+	    print "???: $_\n" if $debug;
+	}
     }
 
     @removes;

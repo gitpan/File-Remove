@@ -3,9 +3,9 @@ MANIFEST
 Makefile.PL
 README
 lib/File/Remove.pm
-t/0_use.t
-t/1_file.t
-t/2_dir.t
-t/3_recurse.t
-t/4_combo.t
 META.yml                                 Module meta-data (added by MakeMaker)
+t/0_use.t
+t/1_file.t                               Test with files
+t/2_dir.t                                Test with directories
+t/3_recurse.t                            Test with directories, recursively
+t/4_combo.t                              Test with files and directories
