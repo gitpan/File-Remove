@@ -1,0 +1,19 @@
+Revision history for Perl extension File::Remove.
+
+0.20 Tue Apr 15 23:34:25 1998
+    - Now you can pass a scalar reference as the first argument and it
+      will used as the recursive flag when removing directories.  With
+      recursive flag set to 0 only the files in the directory are
+      removed and no attempt is made to recurse into subdirectories.
+      Nevertheless, if the directory becomes empty it is removed.
+
+0.12 Tue Apr 14 15:50:56 1998
+    - change the umask and set the permission on directories so we can
+      remove the files
+
+0.11 Mon Apr 13 16:37:30 1998
+    - changed the return values to successes rather than failures since
+      it makes more sense.
+
+0.10  Fri Apr 10 22:32:13 EDT 1998
+    - original version
