@@ -2,7 +2,7 @@ package File::Remove;
 
 =head1 NAME
 
-B<File::Remove> - Remove files and directories
+File::Remove - Remove files and directories
 
 =head1 SYNOPSIS
 
@@ -103,7 +103,7 @@ use vars qw(@EXPORT_OK @ISA $VERSION $debug $unlink $rmdir);
 
 use File::Spec;
 
-$VERSION = '0.25';
+$VERSION = '0.26';
 
 sub _recurse_dir($);
 

@@ -1,5 +1,8 @@
 Revision history for Perl extension File::Remove.
 
+0.26 Mon Nov 16 07:31:00 2004
+    - Fix the synopsis.
+
 0.25 Mon Nov 15 12:04:00 2004
     - Renamed undelete() to trash(), to be more clear.
     - Allow users to provide their own rmdir/unlink to trash().
