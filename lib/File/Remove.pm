@@ -104,7 +104,9 @@ use vars qw(@EXPORT_OK @ISA $VERSION $debug $unlink $rmdir);
 use File::Spec;
 use File::Path qw(rmtree);
 
-$VERSION = '0.29';
+$VERSION = '0.30';
+
+our $glue;
 
 sub expand (@)
 {
@@ -176,13 +178,14 @@ sub trash (@) {
 	$unlink = \&Win32::FileOp::Recycle;
 	$rmdir = \&Win32::FileOp::Recycle;
     } elsif ($^O eq 'darwin') {
-	our $f;
-	eval 'use Mac::Glue ();';
-	die "Can't load Mac::Glue::Finder to support the Trash Can: \$@ = $@" if length $@;
+	unless ($glue) {
+	    eval 'use Mac::Glue ();';
+	    die "Can't load Mac::Glue::Finder to support the Trash Can: \$@ = $@" if length $@;
+	    $glue = Mac::Glue->new('Finder');
+	}
 	my $code = sub {
-	    my $f = Mac::Glue->new("Finder");
-	    my @files = map { s{^:}{}; $_ } map { s{/}{:}g; $_ } map { File::Spec->rel2abs($_) } @_;
-	    $f->delete(@files);
+	    my @files = map { Mac::Glue::param_type(Mac::Glue::typeAlias() => $_) } @_;
+	    $glue->delete(\@files);
 	};
 	$unlink = $code;
 	$rmdir = $code;

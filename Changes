@@ -1,5 +1,8 @@
 Revision history for Perl extension File::Remove.
 
+0.30 Wed Jul 14 19:12:00 2005
+    - Applied CNANDOR's patch to fix trash() support on OS X 10.4.
+
 0.29 Mon Dec 04 16:35:00 2004
     - Stabilize undelete support for OS X and Windows.
 

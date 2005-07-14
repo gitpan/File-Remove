@@ -29,6 +29,7 @@ for my $path (@dirs) {
       "!-e: $path";
     ok mkdir($path),
       "mkdir: $path";
+	chmod 0777, $path;
     ok -e $path,
       "-e: $path";
 }
@@ -47,6 +48,7 @@ for my $path (@dirs) {
       "!-e: $path";
     ok mkdir($path),
       "mkdir: $path";
+	chmod 0777, $path;
     ok -e $path,
       "-e: $path";
 }
@@ -65,6 +67,7 @@ for my $path (@dirs) {
       "!-e: $path";
     ok mkdir($path),
       "mkdir: $path";
+	chmod 0777, $path;
     ok -e $path,
       "-e: $path";
 }
@@ -92,8 +95,10 @@ for my $path (reverse @dirs) {
 TODO: {
     local $TODO;
     if ($^O eq 'darwin') {
-        eval 'use Mac::Glue;';
+        eval 'use Mac::Glue ();';
         $TODO = "Undelete support requires Mac::Glue" if length $@;
+	eval 'use Mac::Glue::Finder ();';
+        $TODO = "Undelete support requires Mac::Glue::Finder" if length $@;
     } elsif ($^O eq 'cygwin' || $^O =~ /^MSWin/) {
         eval 'use Win32::FileOp::Recycle;';
         $TODO = "Undelete support requires Win32::FileOp::Recycle" if length $@;
@@ -106,6 +111,7 @@ TODO: {
 	  "!-e: $path";
 	ok mkdir($path),
 	  "mkdir: $path";
+	chmod 0777, $path;
 	ok -e $path,
 	  "-e: $path";
     }
@@ -137,6 +143,7 @@ TODO: {
 	  "!-e: $path";
 	ok mkdir($path),
 	  "mkdir: $path";
+	chmod 0777, $path;
 	ok -e $path,
 	  "-e: $path";
     }
@@ -166,6 +173,7 @@ TODO: {
 	  "!-e: $path";
 	ok mkdir($path),
 	  "mkdir: $path";
+	chmod 0777, $path;
 	ok -e $path,
 	  "-e: $path";
     }
