@@ -1,5 +1,9 @@
 Revision history for Perl extension File::Remove.
 
+0.31 Wed Dec 28 17:40:00 2005
+    - Applied Eric Hanchrow's patch to support filenames with spaces.
+    - Skip recycle tests unless recycle/trash support is available.
+
 0.30 Wed Jul 14 19:12:00 2005
     - Applied CNANDOR's patch to fix trash() support on OS X 10.4.
 

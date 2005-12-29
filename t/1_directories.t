@@ -92,18 +92,17 @@ for my $path (reverse @dirs) {
     }
 }
 
-TODO: {
-    local $TODO;
+SKIP: {
     if ($^O eq 'darwin') {
         eval 'use Mac::Glue ();';
-        $TODO = "Undelete support requires Mac::Glue" if length $@;
+        skip "Undelete support requires Mac::Glue", 0 if length $@;
 	eval 'use Mac::Glue::Finder ();';
-        $TODO = "Undelete support requires Mac::Glue::Finder" if length $@;
+        skip "Undelete support requires Mac::Glue::Finder", 0 if length $@;
     } elsif ($^O eq 'cygwin' || $^O =~ /^MSWin/) {
         eval 'use Win32::FileOp::Recycle;';
-        $TODO = "Undelete support requires Win32::FileOp::Recycle" if length $@;
+        skip "Undelete support requires Win32::FileOp::Recycle", 0 if length $@;
     } else {
-        $TODO = "Undelete support not available by default";
+        skip "Undelete support not available by default", 0;
     }
     
     for my $path (@dirs) {
