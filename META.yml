@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                File-Remove
-version:             0.33
+version:             0.34
 abstract:            Remove files and directories
 license:             ~
 generated_by:        ExtUtils::MakeMaker version 6.31
