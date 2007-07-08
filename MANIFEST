@@ -8,5 +8,6 @@ t/01_compile.t
 t/02_directories.t
 t/03_deep_readonly.t
 t/04_can_delete.t
+t/05_links.t
 t/99_author.t
 META.yml                                 Module meta-data (added by MakeMaker)
