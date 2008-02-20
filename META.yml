@@ -1,9 +1,11 @@
 --- #YAML:1.0
 name:                File-Remove
-version:             0.39
+version:             1.39_01
 abstract:            Remove files and directories
 license:             ~
-generated_by:        ExtUtils::MakeMaker version 6.32
+author:              
+    - Richard Soderberg <rs@localdomain>
+generated_by:        ExtUtils::MakeMaker version 6.42
 distribution_type:   module
 requires:     
     File::Copy:                    0
@@ -11,7 +13,5 @@ requires:
     File::Path:                    0
     File::Spec:                    0.84
 meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.2.html
-    version: 1.2
-author:
-    - Richard Soderberg <rs@localdomain>
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3
