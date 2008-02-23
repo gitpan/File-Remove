@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                File-Remove
-version:             1.39_01
+version:             1.40
 abstract:            Remove files and directories
 license:             ~
 author:              
