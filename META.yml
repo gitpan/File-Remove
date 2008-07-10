@@ -5,11 +5,11 @@ author:
 build_requires:
   Test::More: 0.42
 distribution_type: module
-generated_by: 'Module::Install version 0.75'
+generated_by: 'Module::Install version 0.76'
 license: perl
 meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.3.html
-  version: 1.3
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
 module_name: File::Remove
 name: File-Remove
 no_index:
@@ -20,6 +20,8 @@ requires:
   File::Copy: 0
   File::Glob: 0
   File::Path: 0
-  File::Spec: 0.84
+  File::Spec: 0.80
   perl: 5.005
-version: 1.41
+resources:
+  license: http://dev.perl.org/licenses/
+version: 1.42

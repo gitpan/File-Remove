@@ -2,19 +2,19 @@ NAME
     File::Remove - Remove files and directories
 
 SYNOPSIS
-        use File::Remove qw(remove);
+        use File::Remove 'remove';
 
         # removes (without recursion) several files
-        remove qw( *.c *.pl );
+        remove( '*.c', '*.pl' );
 
         # removes (with recursion) several directories
-        remove \1, qw( directory1 directory2 ); 
+        remove( \1, qw{directory1 directory2} ); 
 
         # removes (with recursion) several files and directories
-        remove \1, qw( file1 file2 directory1 *~ );
+        remove( \1, qw{file1 file2 directory1 *~} );
 
         # trashes (with support for undeleting later) several files
-        trash qw( *~ );
+        trash( '*~' );
 
 DESCRIPTION
     File::Remove::remove removes files and directories. It acts like
@@ -26,43 +26,51 @@ DESCRIPTION
     addition of an optional, infrequently used "other platforms" hashref.
 
 SUBROUTINES
-    remove
-        Removes files and directories. Directories are removed recursively
-        like in rm -rf if the first argument is a reference to a scalar that
-        evaluates to true. If the first arguemnt is a reference to a scalar
-        then it is used as the value of the recursive flag. By default it's
-        false so only pass \1 to it.
+  remove
+    Removes files and directories. Directories are removed recursively like
+    in rm -rf if the first argument is a reference to a scalar that
+    evaluates to true. If the first arguemnt is a reference to a scalar then
+    it is used as the value of the recursive flag. By default it's false so
+    only pass \1 to it.
 
-        In list context it returns a list of files/directories removed, in
-        scalar context it returns the number of files/directories removed.
-        The list/number should match what was passed in if everything went
-        well.
+    In list context it returns a list of files/directories removed, in
+    scalar context it returns the number of files/directories removed. The
+    list/number should match what was passed in if everything went well.
 
-    rm  Just calls remove. It's there for people who get tired of typing
-        remove.
+  rm
+    Just calls remove. It's there for people who get tired of typing remove.
 
-    trash
-        Removes files and directories, with support for undeleting later.
-        Accepts an optional "other platforms" hashref, passing the remaining
-        arguments to remove.
+  clear
+    The "clear" function is a version of "remove" designed for use in test
+    scripts. It takes a list of paths that it will both initially delete
+    during the current test run, and then further flag for deletion at
+    END-time as a convenience for the next test run.
 
-        Win32
-            Requires Win32::FileOp.
+  trash
+    Removes files and directories, with support for undeleting later.
+    Accepts an optional "other platforms" hashref, passing the remaining
+    arguments to remove.
 
-            Installation not actually enforced on Win32 yet, since
-            Win32::FileOp has badly failing dependencies at time of writing.
+    Win32
+        Requires Win32::FileOp.
 
-        OS X
-            Requires Mac::Glue.
+        Installation not actually enforced on Win32 yet, since Win32::FileOp
+        has badly failing dependencies at time of writing.
 
-        Other platforms
-            The first argument to trash() must be a hashref with two keys,
-            'rmdir' and 'unlink', each referencing a coderef. The coderefs
-            will be called with the filenames that are to be deleted.
+    OS X
+        Requires Mac::Glue.
 
-BUGS
-    See <http://rt.cpan.org/NoAuth/Bugs.html?Dist=File-Remove> for the
-    up-to-date bug listing.
+    Other platforms
+        The first argument to trash() must be a hashref with two keys,
+        'rmdir' and 'unlink', each referencing a coderef. The coderefs will
+        be called with the filenames that are to be deleted.
+
+SUPPORT
+    Bugs should always be submitted via the CPAN bug tracker
+
+    <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=File-Remove>
+
+    For other issues, contact the maintainer.
 
 AUTHOR
     Adam Kennedy <adamk@cpan.org>
