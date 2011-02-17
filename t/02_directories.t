@@ -14,7 +14,6 @@ use File::Remove qw{ remove trash };
 
 
 # Set up the tests
-
 my @dirs = ("$0.tmp", map { "$0.tmp/$_" } qw(a a/b c c/d e e/f g));
 
 for my $path ( reverse @dirs ) {
@@ -26,7 +25,7 @@ for my $path ( reverse @dirs ) {
 
 for my $path ( @dirs ) {
 	ok( ! -e $path,   "!-e: $path"   );
-	ok( mkdir($path), "mkdir: $path" );
+	ok( mkdir($path, 0777), "mkdir: $path" );
 	chmod 0777, $path;
 	ok( -e $path,     "-e: $path"    );
 }
@@ -39,7 +38,7 @@ for my $path (reverse @dirs) {
 
 for my $path ( @dirs ) {
 	ok( ! -e $path,   "!-e: $path"   );
-	ok( mkdir($path), "mkdir: $path" );
+	ok( mkdir($path, 0777), "mkdir: $path" );
 	chmod 0777, $path;
 	ok( -e $path,     "-e: $path"    );
 }
@@ -52,7 +51,7 @@ for my $path (reverse @dirs) {
 
 for my $path (@dirs) {
 	ok( !-e $path,    "!-e: $path"   );
-	ok( mkdir($path), "mkdir: $path" );
+	ok( mkdir($path, 0777), "mkdir: $path" );
 	chmod 0777, $path;
 	ok( -e $path,     "-e: $path"    );
 }
@@ -75,8 +74,8 @@ SKIP: {
 	if ($^O eq 'darwin') {
 		eval 'use Mac::Glue ();';
 		skip "Undelete support requires Mac::Glue", 0 if length $@;
-		eval 'use Mac::Glue::Finder ();';
-		skip "Undelete support requires Mac::Glue::Finder", 0 if length $@;
+		eval 'Mac::Glue->new("Finder")';
+		skip "Undelete support requires Mac::Glue with Finder support", 0 if length $@;
 	} elsif ($^O eq 'cygwin' || $^O =~ /^MSWin/) {
 		eval 'use Win32::FileOp::Recycle;';
 		skip "Undelete support requires Win32::FileOp::Recycle", 0 if length $@;
@@ -86,7 +85,7 @@ SKIP: {
 
 	for my $path (@dirs) {
 		ok( !-e $path,    "!-e: $path"   );
-		ok( mkdir($path), "mkdir: $path" );
+		ok( mkdir($path, 0777), "mkdir: $path" );
 		chmod 0777, $path;
 		ok( -e $path,     "-e: $path"    );
 	}
@@ -108,7 +107,7 @@ SKIP: {
 
 	for my $path (@dirs) {
 		ok( !-e $path,    "!-e: $path"   );
-		ok( mkdir($path), "mkdir: $path" );
+		ok( mkdir($path, 0777), "mkdir: $path" );
 		chmod 0777, $path;
 		ok( -e $path,     "-e: $path"    );
 	}
@@ -129,7 +128,7 @@ SKIP: {
 
 	for my $path (@dirs) {
 		ok( !-e $path,    "!-e: $path"   );
-		ok( mkdir($path), "mkdir: $path" );
+		ok( mkdir($path, 0777), "mkdir: $path" );
 		chmod 0777, $path;
 		ok( -e $path,     "-e: $path"    );
 	}
@@ -137,7 +136,8 @@ SKIP: {
 	for my $path (reverse @dirs) {
 		ok( -e $path, "-e: $path"        );
 		ok(
-			eval { trash({ 'rmdir' => sub { 1 }, 'unlink' => sub { 1 } }, $path) },
+			# Fake callbacks will not remove directories, so trash() would return empty list
+			eval { trash({ 'rmdir' => sub { 1 }, 'unlink' => sub { 1 } }, $path); 1 },
 			"trash: $path",
 		);
 		ok( -e $path, "-e: $path"        );

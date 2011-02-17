@@ -3,9 +3,12 @@ abstract: 'Remove files and directories'
 author:
   - 'Adam Kennedy <adamk@cpan.org>'
 build_requires:
+  ExtUtils::MakeMaker: 6.42
   Test::More: 0.42
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.76'
+generated_by: 'Module::Install version 1.00'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -16,12 +19,13 @@ no_index:
   directory:
     - inc
     - t
+    - xt
 requires:
-  File::Copy: 0
-  File::Glob: 0
-  File::Path: 0
-  File::Spec: 0.80
-  perl: 5.005
+  Cwd: 3.2701
+  File::Spec: 3.2701
+  perl: 5.00503
 resources:
+  ChangeLog: http://fisheye2.atlassian.com/changelog/cpan/trunk/File-Remove
   license: http://dev.perl.org/licenses/
-version: 1.42
+  repository: http://svn.ali.as/cpan/trunk/File-Remove
+version: 1.45_01

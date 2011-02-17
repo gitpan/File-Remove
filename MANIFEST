@@ -2,6 +2,7 @@ Changes
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
+inc/Module/Install/DSL.pm
 inc/Module/Install/Fetch.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
@@ -19,6 +20,7 @@ t/03_deep_readonly.t
 t/04_can_delete.t
 t/05_links.t
 t/06_curly.t
-t/97_meta.t
-t/98_pod.t
-t/99_pmv.t
+t/07_cwd.t
+xt/meta.t
+xt/pmv.t
+xt/pod.t

@@ -76,15 +76,15 @@ AUTHOR
     Adam Kennedy <adamk@cpan.org>
 
 COPYRIGHT
-    Some parts copyright 2006 - 2008 Adam Kennedy.
+    Some parts copyright 2006 - 2011 Adam Kennedy.
 
-    Taken over by Adam Kennedy <adamk@cpan.org>, to fix the "deep readonly
-    files" bug, and do some more cleaning up.
+    Taken over by Adam Kennedy <adamk@cpan.org> to fix the "deep readonly
+    files" bug, and do some package cleaning.
 
     Some parts copyright 2004 - 2005 Richard Soderberg.
 
-    Taken over by Richard Soderberg <perl@crystalflame.net>, so as to port
-    it to File::Spec and add tests.
+    Taken over by Richard Soderberg <perl@crystalflame.net> to port it to
+    File::Spec and add tests.
 
     Original copyright: 1998 by Gabor Egressy, <gabor@vmunix.com>.
 

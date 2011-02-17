@@ -1,22 +1,24 @@
 package File::Remove;
 
-use 5.005;
+use 5.00503;
 use strict;
 
-use vars qw{$VERSION @ISA @EXPORT_OK};
-use vars qw{$debug $unlink $rmdir};
+use vars qw{ $VERSION @ISA @EXPORT_OK };
+use vars qw{ $DEBUG $unlink $rmdir    };
 BEGIN {
-	$VERSION   = '1.42';
-	@ISA       = qw{ Exporter};
+	$VERSION   = '1.45_01';
+	$VERSION   = eval $VERSION;
+	@ISA       = qw{ Exporter };
 	@EXPORT_OK = qw{ remove rm clear trash };
 }
 
 # If we ever need a Mac::Glue object we will want to cache it.
 my $glue;
 
-use File::Spec ();
 use File::Path ();
 use File::Glob ();
+use File::Spec 3.2701 ();
+use Cwd        3.2701 ();
 
 sub expand (@) {
 	map { -e $_ ? $_ : File::Glob::bsd_glob($_) } @_;
@@ -24,7 +26,7 @@ sub expand (@) {
 
 # $debug variable must be set before loading File::Remove.
 # Convert to a constant to allow debugging code to be pruned out.
-use constant DEBUG    => !! $debug;
+use constant DEBUG    => !! $DEBUG;
 
 # Are we on VMS?
 # If so copy File::Path and assume VMS::Filespec is loaded
@@ -77,15 +79,15 @@ sub remove (@) {
 	# Iterate over the files
 	my @removes;
 	foreach my $path ( @files ) {
-                # need to check for symlink first
-                # could be pointing to nonexisting/non-readable destination
+		# need to check for symlink first
+		# could be pointing to nonexisting/non-readable destination
 		if ( -l $path ) {
 			print "link: $path\n" if DEBUG;
 			if ( $unlink ? $unlink->($path) : unlink($path) ) {
 				push @removes, $path;
 			}
 			next;
-                }
+		}
 		unless ( -e $path ) {
 			print "missing: $path\n" if DEBUG;
 			push @removes, $path; # Say we deleted it
@@ -132,7 +134,15 @@ sub remove (@) {
 
 		} elsif ( -d $path ) {
 			print "dir: $path\n" if DEBUG;
-			my $dir = File::Spec->canonpath( $path );
+			my $dir = File::Spec->canonpath($path);
+
+			# Do we need to move our cwd out of the location
+			# we are planning to delete?
+			my $chdir = _moveto($dir);
+			if ( length $chdir ) {
+				chdir($chdir) or next;
+			}
+
 			if ( $$recursive ) {
 				if ( File::Path::rmtree( [ $dir ], DEBUG, 0 ) ) {
 					# Failed to delete the directory
@@ -199,11 +209,51 @@ sub trash (@) {
 		die "Support for trash() on platform '$^O' not available at this time.\n";
 	}
 
-	goto &remove;
+	remove(@_);
 }
 
 sub undelete (@) {
 	goto &trash;
+}
+
+
+
+
+
+######################################################################
+# Support Functions
+
+# Do we need to move to a different directory to delete a directory,
+# and if so which.
+sub _moveto {
+	# Do everything in absolute terms
+	my $cwd    = Cwd::abs_path( Cwd::cwd() );
+	my $remove = Cwd::abs_path( File::Spec->rel2abs(shift) );
+
+	# If we are on a different volume we don't need to move
+	my ( $cv, $cd ) = File::Spec->splitpath( $cwd,    1 );
+	my ( $rv, $rd ) = File::Spec->splitpath( $remove, 1 );
+	return '' unless $cv eq $rv;
+
+	# If we have to move, it's to one level above the deletion
+	my @cd = File::Spec->splitdir($cd);
+	my @rd = File::Spec->splitdir($rd);
+	pop @rd;
+
+	# Is the current directory inside of the moveto directory?
+	unless ( @cd > @rd ) {
+		return '';
+	}
+	foreach ( 0 .. $#rd ) {
+		$cd[$_] eq $rd[$_] or return '';
+	}
+
+	# Confirmed, the current working dir is in the removal dir
+	return File::Spec->catpath(
+		$rv,
+		File::Spec->catdir(@rd),
+		''
+	);
 }
 
 1;
@@ -311,15 +361,15 @@ Adam Kennedy E<lt>adamk@cpan.orgE<gt>
 
 =head1 COPYRIGHT
 
-Some parts copyright 2006 - 2008 Adam Kennedy.
+Some parts copyright 2006 - 2011 Adam Kennedy.
 
-Taken over by Adam Kennedy E<lt>adamk@cpan.orgE<gt>, to fix the
-"deep readonly files" bug, and do some more cleaning up.
+Taken over by Adam Kennedy E<lt>adamk@cpan.orgE<gt> to fix the
+"deep readonly files" bug, and do some package cleaning.
 
 Some parts copyright 2004 - 2005 Richard Soderberg.
 
-Taken over by Richard Soderberg E<lt>perl@crystalflame.netE<gt>, so as
-to port it to L<File::Spec> and add tests.
+Taken over by Richard Soderberg E<lt>perl@crystalflame.netE<gt> to
+port it to L<File::Spec> and add tests.
 
 Original copyright: 1998 by Gabor Egressy, E<lt>gabor@vmunix.comE<gt>.
 
