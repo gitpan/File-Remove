@@ -21,6 +21,7 @@ t/04_can_delete.t
 t/05_links.t
 t/06_curly.t
 t/07_cwd.t
+t/08_spaces.t
 xt/meta.t
 xt/pmv.t
 xt/pod.t
