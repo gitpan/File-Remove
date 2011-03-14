@@ -6,7 +6,7 @@ BEGIN {
 	$^W = 1;
 }
 
-use Test::More tests => 152;
+use Test::More 'no_plan';
 use File::Remove qw{ remove trash };
 
 

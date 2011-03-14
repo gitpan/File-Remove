@@ -28,4 +28,4 @@ resources:
   ChangeLog: http://fisheye2.atlassian.com/changelog/cpan/trunk/File-Remove
   license: http://dev.perl.org/licenses/
   repository: http://svn.ali.as/cpan/trunk/File-Remove
-version: 1.48
+version: 1.49
