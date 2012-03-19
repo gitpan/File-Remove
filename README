@@ -76,7 +76,7 @@ AUTHOR
     Adam Kennedy <adamk@cpan.org>
 
 COPYRIGHT
-    Some parts copyright 2006 - 2011 Adam Kennedy.
+    Some parts copyright 2006 - 2012 Adam Kennedy.
 
     Taken over by Adam Kennedy <adamk@cpan.org> to fix the "deep readonly
     files" bug, and do some package cleaning.

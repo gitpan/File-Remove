@@ -9,7 +9,7 @@ configure_requires:
   ExtUtils::MakeMaker: 6.36
 distribution_type: module
 dynamic_config: 0
-generated_by: 'Module::Install version 1.04'
+generated_by: 'Module::Install version 1.06'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -22,11 +22,11 @@ no_index:
     - t
     - xt
 requires:
-  Cwd: 3.2701
-  File::Spec: 3.2701
+  Cwd: 3.29
+  File::Spec: 3.29
   perl: 5.00503
 resources:
   ChangeLog: http://fisheye2.atlassian.com/changelog/cpan/trunk/File-Remove
   license: http://dev.perl.org/licenses/
   repository: http://svn.ali.as/cpan/trunk/File-Remove
-version: 1.51
+version: 1.52
